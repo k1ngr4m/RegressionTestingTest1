@@ -1,3 +1,4 @@
+import random
 import time
 
 from selenium import webdriver
@@ -67,3 +68,7 @@ class BasePage:
     # 解决element click intercepted
     def execute_script(self, loc):
         self.driver.execute_script("arguments[0].click();", loc)
+
+    def wait(self):
+        wait_time = random.randint(1, 4)
+        time.sleep(wait_time)

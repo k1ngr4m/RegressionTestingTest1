@@ -21,10 +21,8 @@ class Login(BasePage):
         self.driver.get(self.QR_url)
         self.click(self.loginDingdingAccountBtn_loc)
         self.input_userdata()
-        time.sleep(3)
         self.choose_company()
         self.confirm_login()
-        time.sleep(3)
 
     def input_userdata(self):
         phone_number = "17606745824"
@@ -33,6 +31,7 @@ class Login(BasePage):
         self.send_keys(self.passwordInput_loc, password)
         self.click(self.confirmLoginBtn_loc)
         print(f"账号：{phone_number}，选择公司中")
+        self.wait()
 
     def choose_company(self):
         self.click(self.ceshiMisaki_loc)
@@ -40,4 +39,5 @@ class Login(BasePage):
 
     def confirm_login(self):
         self.click(self.loginBtn_loc)
+        self.wait()
         print("登陆成功")

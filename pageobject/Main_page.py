@@ -14,6 +14,7 @@ class MainPage(BasePage):
     date_list_loc = (By.CLASS_NAME, "el-date-picker__header-label")
     radio_list_loc = (By.CLASS_NAME, "el-radio__label")
     checkbox_list_loc = (By.CLASS_NAME, "el-checkbox__label")
+    scrollbar_list_loc = (By.XPATH, "//div[@class='el-scrollbar']")
 
     addBtn_loc = (By.ID, "add")
     saveBtn_loc = (By.XPATH, "//*[@id='app']/div[1]/div/div/div[1]/div/div[3]/button[2]")
@@ -76,13 +77,37 @@ class MainPage(BasePage):
 
         # 输入日期
         date_spinner = input_list[6]
+        self.select_date(date_spinner)
+
+        # 选择单选按钮
+        self.select_radio()
+
+        # 选择复选框组
+        self.select_checkbox()
+
+        # 选择下拉框
+        single_spinner = input_list[7]
+        self.select_single_spinner(single_spinner)
+
+        # 选择下拉复选框
+        multiple_spinner = input_list[9]
+        self.select_multiple_spinner(multiple_spinner)
+
+        self.wait()
+        self.click(self.saveBtn_loc)
+
+    def random_item(self, item_list):
+        item = item_list[random.randint(0, len(item_list) - 1)]
+        return item
+
+    def select_date(self, date_spinner):
         date_spinner.click()
 
         date_tr_list = self.locator_elements(self.date_tree_list_loc)
-        date_tr = date_tr_list[random.randint(0, len(date_tr_list) - 1)]
+        date_tr = self.random_item(date_tr_list)
 
         date_td_list = date_tr.find_elements(By.XPATH, ".//td")
-        date_td = date_td_list[random.randint(0, len(date_td_list) - 1)]
+        date_td = self.random_item(date_td_list)
         date_day = f"{date_td.text}日"
         date_td.click()
 
@@ -92,25 +117,64 @@ class MainPage(BasePage):
         date_month = date_list[1].text.replace(" ", "")
         print(f"日期：{date_year}{date_month}{date_day}")
 
-        # 单击单行文本框取消聚焦
-        single_line_text_input.click()
+        # 单击日期取消聚焦
+        date_td.click()
 
-        # 选择单选按钮
+    def select_radio(self):
         radio_list = self.locator_elements(self.radio_list_loc)
-        radio = radio_list[random.randint(0, len(radio_list)-1)]
+        radio = self.random_item(radio_list)
         radio.click()
         radio_color = radio.find_element(By.XPATH, ".//span").get_attribute("style")
         radio_value = radio.text
         print(f"单选按钮值：{radio_value}，颜色：{radio_color}")
         # todo 输入其他值
 
-        # 选择复选框组
+    def select_checkbox(self):
         checkbox_list = self.locator_elements(self.checkbox_list_loc)
-        checkbox_chosen_count = random.randint(0, len(checkbox_list))
-        checkbox_chosen_list = random.sample(checkbox_list,checkbox_chosen_count)
-        print(checkbox_chosen_list)
+        checkbox_chosen_count = random.randint(1, len(checkbox_list))
+        checkbox_chosen_list = random.sample(checkbox_list, checkbox_chosen_count)
+
         for i in checkbox_chosen_list:
             i.click()
+            checkbox_value = i.text
+            checkbox_color = i.find_element(By.XPATH, ".//span").get_attribute("style")
 
-        self.wait()
-        self.click(self.saveBtn_loc)
+            if checkbox_value == "其他":
+                checkbox_others_value = "其他"
+                checkbox_others = i.find_element(By.XPATH, ".//input")
+                checkbox_others.send_keys(checkbox_others_value)
+                checkbox_value = checkbox_others_value
+
+            print(f"复选框组值：{checkbox_value}，颜色：{checkbox_color}")
+
+    def select_single_spinner(self, single_spinner):
+        single_spinner.click()
+        scrollbar_list = self.locator_elements(self.scrollbar_list_loc)
+        scrollbar = scrollbar_list[-1]
+        select_item_list = scrollbar.find_elements(By.XPATH, ".//../../li")
+        select_item = self.random_item(select_item_list)
+        select_item.click()
+        select_item_color = select_item.find_element(By.XPATH, ".//span").get_attribute("style")
+        select_item_value = select_item.text
+        print(f"下拉框值：{select_item_value}，颜色：{select_item_color}")
+
+    def select_multiple_spinner(self, multiple_spinner):
+        multiple_spinner.click()
+        scrollbar_list = self.locator_elements(self.scrollbar_list_loc)
+        scrollbar = scrollbar_list[-1]
+        select_item_list = scrollbar.find_elements(By.XPATH, ".//../../li")
+        select_item_chosen_count = random.randint(1, len(select_item_list))
+        select_item_chosen_list = random.sample(select_item_list, select_item_chosen_count)
+        for i in select_item_chosen_list:
+            i.click()
+            select_item_value = i.text
+            select_item_color = i.find_element(By.XPATH, ".//span").get_attribute("style")
+
+            if select_item_value == "其他":
+                select_item_others_value = "其他"
+                select_item_others = i.find_element(By.XPATH, ".//input")
+                select_item_others.send_keys(select_item_others_value)
+                select_item_value = select_item_others_value
+
+            print(f"下拉复选框组值：{select_item_value}，颜色：{select_item_color}")
+        multiple_spinner.click()
